@@ -52,7 +52,7 @@ function createWindow() {
     mainWindow.webContents.on('did-finish-load', () => {
         mainWindow.show();
     });
-    // mainWindow.webContents.openDevTools({mode:'detach'});
+    mainWindow.webContents.openDevTools({mode:'detach'});
 }
 app.whenReady().then(createWindow)
 app.on('window-all-closed', () => {

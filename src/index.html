@@ -37,6 +37,9 @@
     }
     </script>
     <style type="text/css">
+        body,#panelistic_content,.panelistic_panel{
+            overflow: hidden;
+        }
     </style>
 </head>
 
@@ -46,7 +49,7 @@
             <tr>
                 <td rowspan="3" style="vertical-align: top;" width="140px">Status:<br><span id="statusft" style="font-size: 30px;width: 130px;text-align: center;color: yellow">Loading</span><br><span id='dtit'>--.--.--.--</span></td>
                 <td colspan="2" rowspan="2" style="vertical-align: top;" width="200px">
-                    <div class="panelistic_code" style="min-height: 66px;max-height: 66px;" ><code id="optconsole"><br><br><br></code></div>
+                    <div class="panelistic_code" style="min-height: 66px;max-height: 66px;min-width: 210px;max-width: 200px;" ><code id="optconsole" style="max-height: 57px;max-width: 196px;"><br><br><br></code></div>
                 </td>
                 <td width="65px" onclick="pause()"><input type="button" name="" value="Pause" onclick="pause()" style="width: 110px;"></td>
             </tr>
@@ -96,13 +99,13 @@
             docmd('gnirehtet autorun -d 114.114.114.114,114.114.115.115', 'bin', (dtas) => {
                 document.getElementById('optconsole').innerText=(dtas);
                 if (dtas.search(
-                        /(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d)\.(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d)\.(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d)\.(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d):*(\d*\d*\d*\d*\d*)/
+                        /(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d)\.(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d)\.(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d)\.(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d):*(\d*\d*\d*\d*\d*)/g
                     )) {
                     let rd2035 = dtas.match(
                         /(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d)\.(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d)\.(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d)\.(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d):*(\d*\d*\d*\d*\d*)/g
                     );
                     if (rd2035 != null) {
-                        dtit.innerText = rd2035[1];
+                        dtit.innerText = cutString(rd2035[1]+"",16);
                     }
                 }
             }, (dtas) => {
@@ -129,6 +132,29 @@
             paused = true;
         }
 
+        function cutString(str, len) {
+            if (str.length * 2 <= len) {
+                return str;
+            }
+            var strlen = 0;
+            var s = "";
+            for (var i = 0; i < str.length; i++) {
+                s = s + str.charAt(i);
+                if (str.charCodeAt(i) > 128) {
+                    strlen = strlen + 2;
+                    if (strlen >= len) {
+                        return s.substring(0, s.length - 1) + "...";
+                    }
+                } else {
+                    strlen = strlen + 1;
+                    if (strlen >= len) {
+                        return s.substring(0, s.length - 2) + "...";
+                    }
+                }
+            }
+            return s;
+        }
+
         function continues() {
             if (pause == false) return;
             statusft.innerText = 'Listening';
@@ -142,7 +168,7 @@
                         /(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d)\.(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d)\.(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d)\.(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d):*(\d*\d*\d*\d*\d*)/g
                     );
                     if (rd2035 != null) {
-                        dtit.innerText = rd2035[1];
+                        dtit.innerText = cutString(rd2035[1]+"",16);
                     }
                 }
             }, (dtas) => {
