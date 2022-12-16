@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Cot Hypernet</title>
+    <link rel="stylesheet" type="text/css" href="./panelistic3.0-electron.css">
+    <script type="text/javascript">
+    const {
+        ipcRenderer,
+        app
+    } = require("electron");
+    let fcable = false;
+    window.onbeforeunload = function(e) {
+        if (!fcable) {
+            ipcRenderer.send("closing");
+            e.returnValue = false;
+        } else {
+            docmd('taskkill /f /im gnirehtet.exe', undefined, () => {}, (err) => {
+                console.error(err)
+            }, () => {});
+        }
+    };
+    ipcRenderer.on("fclose", function(event, arg) {
+        fcable = true;
+        ipcRenderer.send("exitingss");
+    });
+
+    function exit() {
+        fcable = true;
+        window.close();
+    }
+
+    function reload() {
+        fcable = true;
+        location.reload();
+    }
+    </script>
+    <style type="text/css">
+    </style>
+</head>
+
+<body class="panelistic_window">
+    <div id="panelistic_content">
+        <table class="panelistic_panel" id="mpmaskbtnui">
+            <tr>
+                <td rowspan="3" style="vertical-align: top;" width="140px">Status:<br><span id="statusft" style="font-size: 30px;width: 130px;text-align: center;color: yellow">Loading</span><br><span id='dtit'>--.--.--.--</span></td>
+                <td colspan="2" rowspan="2" style="vertical-align: top;" width="200px">
+                    <div class="panelistic_code" style="min-height: 66px;max-height: 66px;" ><code id="optconsole"><br><br><br></code></div>
+                </td>
+                <td width="65px" onclick="pause()"><input type="button" name="" value="Pause" onclick="pause()" style="width: 110px;"></td>
+            </tr>
+            <tr>
+                <td width="65px"><input type="button" name="" value="Continue" onclick="continues()" style="width: 110px;"></td>
+            </tr>
+            <tr>
+                <td onclick="help()"><input type="button" name="" value="Help" onclick="help()" style="width: 110px;"></td>
+                <td onclick="reload()"><input type="button" name="" value="Reload" onclick="reload()" style="width: 110px;"></td>
+                <td onclick="exit()"><input type="button" name="" value="Exit" onclick="reload()" style="width: 110px;"></td>
+            </tr>
+        </table>
+        <script>
+        // if (window.localStorage.getItem('hidewin')) {
+        //     ipcRenderer.send("closing");
+        // }
+        // window.localStorage.setItem('hidewin', true);
+        const exec = require('child_process').exec;
+        let dtit = document.getElementById("dtit");
+        let statusft = document.getElementById('statusft');
+        //buttons
+        function help() {
+            /*alert(
+                "We will show an icon on the taskbar instead of poping the control panel up if you are not entering Cot Hypernet for the first time. Turn on USB Debugging on your phone and then insert your phone to the computer. After connected, if you're using this for the first time, there will be a notification on your phone that asks to install [Cot Hypernet]. Please accept. Then, allow creating VPN connection. After these steps, you can surf online easily."
+            );*/
+        }
+        let workerProcess;
+
+        function docmd(cmdStr, cmdPath, print, error, exits) {
+            workerProcess = exec(cmdStr, {
+                cwd: cmdPath
+            })
+            workerProcess.stdout.on('data', function(data) {
+                print(data)
+            });
+            workerProcess.stderr.on('data', function(data) {
+                error(data)
+            });
+            workerProcess.on('close', function(code) {
+                exits(code);
+            })
+        }
+
+        setTimeout(function() {
+            statusft.innerText = 'Listening';
+            statusft.style.color = '#00e66f';
+            docmd('gnirehtet autorun -d 114.114.114.114,114.114.115.115', 'bin', (dtas) => {
+                document.getElementById('optconsole').innerText=(dtas);
+                if (dtas.search(
+                        /(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d)\.(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d)\.(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d)\.(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d):*(\d*\d*\d*\d*\d*)/
+                    )) {
+                    let rd2035 = dtas.match(
+                        /(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d)\.(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d)\.(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d)\.(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d):*(\d*\d*\d*\d*\d*)/g
+                    );
+                    if (rd2035 != null) {
+                        dtit.innerText = rd2035[1];
+                    }
+                }
+            }, (dtas) => {
+                if (dtas.indexOf('Execution error: IO error') > -1) {
+                    docmd('taskkill /f /im gnirehtet.exe', undefined, () => {}, (err) => {
+                        console.error(err)
+                    }, () => {});
+                }
+                document.getElementById('optconsole').innerText=(dtas);
+            }, (code) => {
+                document.getElementById('optconsole').innerText=(code);
+            });
+        }, 1000);
+
+        let paused = false;
+
+        function pause() {
+            if (pause == true) return;
+            docmd('taskkill /f /im gnirehtet.exe', undefined, () => {}, (err) => {
+                document.getElementById('optconsole').innerText=err
+            }, () => {});
+            statusft.innerText = 'Stopped';
+            statusft.style.color = 'red';
+            paused = true;
+        }
+
+        function continues() {
+            if (pause == false) return;
+            statusft.innerText = 'Listening';
+            statusft.style.color = '#00e66f';
+            docmd('gnirehtet autorun -d 114.114.114.114,114.114.115.115', 'bin', (dtas) => {
+                document.getElementById('optconsole').innerText=dtas
+                if (dtas.search(
+                        /(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d)\.(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d)\.(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d)\.(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d):*(\d*\d*\d*\d*\d*)/
+                    )) {
+                    let rd2035 = dtas.match(
+                        /(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d)\.(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d)\.(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d)\.(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d):*(\d*\d*\d*\d*\d*)/g
+                    );
+                    if (rd2035 != null) {
+                        dtit.innerText = rd2035[1];
+                    }
+                }
+            }, (dtas) => {
+                if (dtas.indexOf('Execution error: IO error') > -1) {
+                    docmd('taskkill /f /im gnirehtet.exe', undefined, () => {}, (err) => {
+                        document.getElementById('optconsole').innerText=err
+                    }, () => {});
+                }
+                document.getElementById('optconsole').innerText=dtas
+            }, (code) => {
+                document.getElementById('optconsole').innerText=code
+            });
+        }
+        </script>
+    </div>
+</body>
+
+</html>

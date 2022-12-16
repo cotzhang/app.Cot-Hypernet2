@@ -1,0 +1,16 @@
+{
+  "name": "com.cot.hypernet",
+  "version": "1.0.4",
+  "description": "Share internet access for android mobile phones with a line.",
+  "main": "index.js",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-packager . --electron-version=22.0.0 Cot-Hypernet --win32 --out ./built --app-version 2.1.0 --overwrite --icon bin/icon.png --asar   &&   xcopy bin built\\Cot-Hypernet-win32-x64\\bin\\"
+  },
+  "author": "Cot",
+  "dependencies": {
+    "@pyke/vibe": "^0.3.1",
+    "electron-packager": "^17.1.1",
+    "node-cmd": "^3.0.0"
+  }
+}
